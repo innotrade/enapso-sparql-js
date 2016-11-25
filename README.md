@@ -14,7 +14,7 @@ The library use [ES6 Promise](https://developers.google.com/web/fundamentals/get
 1. Creating connection instance:
   ```js
   const ClientBuilder = require('enapso-sparql-js');
-  ClientBuilder({}).then((client) => {
+  ClientBuilder().then((client) => {
       // client is ready to be used
   });
   ```
@@ -38,7 +38,8 @@ The library use [ES6 Promise](https://developers.google.com/web/fundamentals/get
 
   co(function *(){
     // opening and login connection
-    let client = yield ClientBuilder({});
+    let config = {};
+    let client = yield ClientBuilder(config);
     // run queries
     let response1 = yield client.query('EnapsoUnits', 'SELECT ?v WHERE {?s ?p ?v} LIMIT 5');
     let response2 = yield client.query('COSMO', 'SELECT ?v WHERE {?s ?p ?v} LIMIT 5');
