@@ -1,7 +1,7 @@
 {
     "name": "enapso-sparql-js",
     "version": "0.0.1",
-    "description": "Enapso SPARQL Mapper for Node.js",
+    "description": "Enapso SPARQL Abstraction for Node.js",
     "main": "index.js",
     "scripts": {
         "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/test.js --exit"
