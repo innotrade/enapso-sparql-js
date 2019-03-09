@@ -1,8 +1,10 @@
-// Innotrade Enapso GraphDB Admin Example
+// Innotrade Enapso SPARQL JS
 // (C) Copyright 2019 Innotrade GmbH, Herzogenrath, NRW, Germany
+// Author: Alexander Schulze
 
-// require the Enapso GraphDB Admin Demo module
+// require the Enapso GraphDB Client
 const EnapsoGraphDBClient = require("enapso-graphdb-client");
+// require the Enapso SPARQL JS
 const EnapsoSPARQLJS = require("../enapso-sparql-js");
 
 // connection data to the running GraphDB instance
@@ -45,14 +47,22 @@ const EnapsoSPARQLJSDemo = {
 		return lRes;
 	},
 
-	demoGetClassSchema: async function(aOptions) {
+	demoGetClassSchema: async function (aOptions) {
 		var lRes = await EnapsoSPARQLJS.getClassSchema({
-		 	classIRI: "http://ont.enapso.com/test#Person",
-		 	context: "http://ont.enapso.com/test"
+			classIRI: "http://ont.enapso.com/test#Person",
+			context: "http://ont.enapso.com/test"
 		});
 		console.log("\nClass Schema: " + JSON.stringify(lRes, null, 2));
 	},
- 
+
+	demoGetIndividuals: async function (aOptions) {
+		var lRes = await EnapsoSPARQLJS.getIndividuals({
+			classIRI: "http://ont.enapso.com/test#Person",
+			context: "http://ont.enapso.com/test"
+		});
+		console.log("\nIndividuals: " + JSON.stringify(lRes, null, 2));
+	},
+
 	demo: async function () {
 		this.graphDBEndpoint = await this.createEndpoint();
 		this.authentication = await this.login();
@@ -66,6 +76,7 @@ const EnapsoSPARQLJSDemo = {
 		EnapsoSPARQLJS.mGraphDBEndpoint = this.graphDBEndpoint;
 
 		await this.demoGetClassSchema();
+		await this.demoGetIndividuals();
 	}
 }
 
