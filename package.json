@@ -1,6 +1,6 @@
 {
     "name": "@innotrade/enapso-sparql-js",
-    "version": "0.0.2",
+    "version": "1.0.0",
     "description": "Enapso SPARQL Abstraction for Node.js",
     "main": "index.js",
     "scripts": {
@@ -32,9 +32,9 @@
     "homepage": "https://github.com/innotrade/enapso-sparql-js#readme",
     "dependencies": {
         "@innotrade/enapso-graphdb-client": "^1.6.0",
-        "@innotrade/enapso-sparql-tools": "0.0.3",
+        "@innotrade/enapso-sparql-tools": "^1.0.0",
         "chai": "^4.2.0",
-        "mocha": "^5.2.0",
+        "mocha": "^7.0.1",
         "request-promise": "^4.2.5"
     }
 }

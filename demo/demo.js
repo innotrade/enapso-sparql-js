@@ -5,7 +5,7 @@
 // require the Enapso GraphDB Client
 const EnapsoGraphDBClient = require("enapso-graphdb-client");
 // require the Enapso SPARQL JS
-const EnapsoSPARQLJS = require("../enapso-sparql-js");
+const EnapsoSPARQLJS = require("../lib/enapso-sparql-js");
 
 // connection data to the running GraphDB instance
 const
