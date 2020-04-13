@@ -5,5 +5,8 @@
 const { EnapsoSPARQLJS } = require('./lib/enapso-sparql-js');
 
 module.exports = {
+	enspjs: {
+		EnapsoSPARQLJS
+	},
 	EnapsoSPARQLJS
 }

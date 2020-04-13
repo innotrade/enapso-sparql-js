@@ -31,12 +31,14 @@
     },
     "homepage": "https://github.com/innotrade/enapso-sparql-js#readme",
     "dependencies": {
-        "@innotrade/enapso-graphdb-client": "^1.6.0",
-        "@innotrade/enapso-sparql-tools": "^1.0.1",
+        "@innotrade/enapso-graphdb-admin": "^1.1.7",
+        "@innotrade/enapso-graphdb-client": "^1.7.1",
+        "@innotrade/enapso-orm": "^1.1.13",
+        "@innotrade/enapso-sparql-tools": "^1.0.8",
         "request-promise": "^4.2.5"
     },
     "devDependencies": {
         "chai": "^4.2.0",
-        "mocha": "^7.0.1"
+        "mocha": "^7.1.1"
     }
 }
