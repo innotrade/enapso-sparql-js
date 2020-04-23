@@ -14,6 +14,11 @@ console.log("Enapso SPARQL JS Demo\n(C) Copyright 2020 Innotrade GmbH Herzogenra
 class EnapsoSPARQLJSDemo {
 
 	async demo() {
+		console.log(JSON.stringify(Array.prototype, null, 2));
+		return;
+		
+
+
 		let spjs = new enspjs.EnapsoSPARQLJS();
 		await spjs.init();
 		await spjs.loadClasses();

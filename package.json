@@ -35,7 +35,7 @@
         "@innotrade/enapso-graphdb-client": "^1.7.1",
         "@innotrade/enapso-jsast": "^1.0.3",
         "@innotrade/enapso-orm": "^1.1.13",
-        "@innotrade/enapso-sparql-tools": "^1.0.9",
+        "@innotrade/enapso-sparql-tools": "^1.0.10",
         "request-promise": "^4.2.5"
     },
     "devDependencies": {
