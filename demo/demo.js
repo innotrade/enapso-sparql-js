@@ -22,13 +22,16 @@ class EnapsoSPARQLJSDemo {
 			superClassName: 'enecma:Class'
 		});
 
-		let ontClassNameRestriction = new enspjs.OntRestriction({
+		let ontClassNameRestriction = new enspjs.OntValueRestriction({
 			className: 'enecma:TestClass',
 			property: 'enecma:name',
 			value: 'TestClass'
 		});
 
-		ontClass.addRestriction(ontClassNameRestriction);
+		// add the restriction to the class
+		ontClass.addRestriction({
+			restriction: ontClassNameRestriction
+		});
 
 		console.log(ontClass.getTurtle());
 		return;

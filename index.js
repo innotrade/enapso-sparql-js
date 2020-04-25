@@ -2,24 +2,30 @@
 // (C) Copyright 2019-2020 Innotrade GmbH, Herzogenrath, NRW, Germany
 // Authors: Alexander Schulze
 
-const 
+const
 	{ EnapsoSPARQLJS } = require('./lib/enapso-sparql-js'),
 	{ OntTriple } = require('./lib/ontTriple'),
 	{ OntTripleStore } = require('./lib/ontTripleStore'),
 	{ OntNode } = require('./lib/ontNode'),
+	{ ontBlankNode } = require('./lib/ontBlankNode'),
+	{ ontNamedNode } = require('./lib/ontNamedNode'),
 	{ OntClass } = require('./lib/ontClass'),
-	{ OntRestriction } = require('./lib/ontRestriction')
-;
+	{ OntIndividual } = require('./lib/ontIndividual'),
+	{ OntRestriction } = require('./lib/ontRestriction'),
+	{ OntValueRestriction } = require('./lib/ontValueRestriction')
+	;
 
 module.exports = {
 	enspjs: {
-		OntTriple, OntNode, OntClass, 
 		OntTriple, OntTripleStore,
-		OntRestriction,
+		OntNode, ontBlankNode, ontNamedNode,
+		OntClass, OntIndividual,
+		OntRestriction, OntValueRestriction,
 		EnapsoSPARQLJS
 	},
-	OntTriple, OntNode, OntClass,
 	OntTriple, OntTripleStore,
-	OntRestriction,
+	OntNode, ontBlankNode, ontNamedNode,
+	OntClass, OntIndividual,
+	OntRestriction, OntValueRestriction,
 	EnapsoSPARQLJS
 }
