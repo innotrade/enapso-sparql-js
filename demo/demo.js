@@ -16,11 +16,22 @@ class EnapsoSPARQLJSDemo {
 
 	async demo() {
 		// console.log(JSON.stringify(Array.prototype, null, 2));
-		let ontClass = new enspjs.OntClass("enecma:TestClass", "enecma:Class");
+		let ontClass = new enspjs.OntClass({
+			context: 'http://ont.enapso.com/enspjstest',
+			className: 'enecma:TestClass',
+			superClassName: 'enecma:Class'
+		});
+
+		let ontClassNameRestriction = new enspjs.OntRestriction({
+			className: 'enecma:TestClass',
+			property: 'enecma:name',
+			value: 'TestClass'
+		});
+
+		ontClass.addRestriction(ontClassNameRestriction);
+
 		console.log(ontClass.getTurtle());
 		return;
-
-
 
 		let spjs = new enspjs.EnapsoSPARQLJS();
 		await spjs.init();
