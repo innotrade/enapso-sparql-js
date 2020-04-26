@@ -7,7 +7,8 @@ const EnapsoGraphDBClient = require("@innotrade/enapso-graphdb-client");
 
 // require the Enapso SPARQL JS
 const
-	{ enspjs, OntEntity, OntTriple, OntValueRestriction } = require("../index");
+	{ enspjs, OntEntity, OntTriple, 
+		OntValueRestriction, OntOnlyRestriction, OntSomeRestriction } = require("../index");
 
 
 console.log("Enapso SPARQL JS Demo\n(C) Copyright 2020 Innotrade GmbH Herzogenrath, NRW, Germany");
@@ -22,16 +23,35 @@ class EnapsoSPARQLJSDemo {
 			"superClassName": 'enecma:Class'
 		});
 
-		let ontClassNameRestriction = new OntValueRestriction({
+		let classNameRestriction = new OntValueRestriction({
 			className: 'enecma:TestClass',
 			property: 'enecma:name',
 			value: '"TestClass"'
 		});
-
 		// add the restriction to the class
 		ontClass.addRestriction({
-			restriction: ontClassNameRestriction
+			restriction: classNameRestriction
 		});
+
+		let haConstructorsRestriction = new OntSomeRestriction({
+			className: 'enecma:TestClass',
+			property: 'enecma:haConstructors',
+			value: 'enecma:TestConstructor'
+		});
+		// add the restriction to the class
+		ontClass.addRestriction({
+			restriction: haConstructorsRestriction
+		});	
+
+		let hasMethodsRestriction = new OntOnlyRestriction({
+			className: 'enecma:TestClass',
+			property: 'enecma:hasMethods',
+			value: 'enecma:TestMethod'
+		});
+		// add the restriction to the class
+		ontClass.addRestriction({
+			restriction: hasMethodsRestriction
+		});	
 
 		// add a comment to the class
 		let ontComment = new enspjs.OntAnnotation({triple: new OntTriple({

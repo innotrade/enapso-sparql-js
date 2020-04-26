@@ -14,6 +14,8 @@ const
 	{ OntIndividual } = require('./lib/ontIndividual'),
 	{ OntRestriction } = require('./lib/ontRestriction'),
 	{ OntValueRestriction } = require('./lib/ontValueRestriction'),
+	{ OntOnlyRestriction } = require('./lib/ontOnlyRestriction'),
+	{ OntSomeRestriction } = require('./lib/ontSomeRestriction'),
 	{ OntAnnotation } = require('./lib/ontAnnotation')
 	;
 
@@ -22,14 +24,16 @@ module.exports = {
 		OntEntity, OntTriple, OntTripleStore,
 		OntNode, ontBlankNode, ontNamedNode,
 		OntClass, OntIndividual,
-		OntRestriction, OntValueRestriction,
+		OntRestriction, OntValueRestriction, 
+		OntOnlyRestriction, OntSomeRestriction, 
 		OntAnnotation,
 		EnapsoSPARQLJS
 	},
 	OntEntity, OntTriple, OntTripleStore,
 	OntNode, ontBlankNode, ontNamedNode,
 	OntClass, OntIndividual,
-	OntRestriction, OntValueRestriction,
+	OntRestriction, OntValueRestriction, 
+	OntOnlyRestriction, OntSomeRestriction, 
 	OntAnnotation,
 	EnapsoSPARQLJS
 }
