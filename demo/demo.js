@@ -7,7 +7,7 @@ const EnapsoGraphDBClient = require("@innotrade/enapso-graphdb-client");
 
 // require the Enapso SPARQL JS
 const
-	{ enspjs, OntEntity, OntTriple } = require("../index");
+	{ enspjs, OntEntity, OntTriple, OntValueRestriction } = require("../index");
 
 
 console.log("Enapso SPARQL JS Demo\n(C) Copyright 2020 Innotrade GmbH Herzogenrath, NRW, Germany");
@@ -22,7 +22,7 @@ class EnapsoSPARQLJSDemo {
 			"superClassName": 'enecma:Class'
 		});
 
-		let ontClassNameRestriction = new enspjs.OntValueRestriction({
+		let ontClassNameRestriction = new OntValueRestriction({
 			className: 'enecma:TestClass',
 			property: 'enecma:name',
 			value: '"TestClass"'
