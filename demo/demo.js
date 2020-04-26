@@ -7,7 +7,7 @@ const EnapsoGraphDBClient = require("@innotrade/enapso-graphdb-client");
 
 // require the Enapso SPARQL JS
 const
-	{ enspjs } = require("../index");
+	{ enspjs, OntEntity, OntTriple } = require("../index");
 
 
 console.log("Enapso SPARQL JS Demo\n(C) Copyright 2020 Innotrade GmbH Herzogenrath, NRW, Germany");
@@ -17,20 +17,30 @@ class EnapsoSPARQLJSDemo {
 	async demo() {
 		// console.log(JSON.stringify(Array.prototype, null, 2));
 		let ontClass = new enspjs.OntClass({
-			context: 'http://ont.enapso.com/enspjstest',
-			className: 'enecma:TestClass',
-			superClassName: 'enecma:Class'
+			"context": 'http://ont.enapso.com/enspjstest',
+			"className": 'enecma:TestClass',
+			"superClassName": 'enecma:Class'
 		});
 
 		let ontClassNameRestriction = new enspjs.OntValueRestriction({
 			className: 'enecma:TestClass',
 			property: 'enecma:name',
-			value: 'TestClass'
+			value: '"TestClass"'
 		});
 
 		// add the restriction to the class
 		ontClass.addRestriction({
 			restriction: ontClassNameRestriction
+		});
+
+		// add a comment to the class
+		let ontComment = new enspjs.OntAnnotation({triple: new OntTriple({
+			subject: 'enecma:TestClass',
+			predicate: 'rdfs:comment',
+			object: '"My comment for the new TestClass"@en'
+		})});
+		ontClass.addAnnotation({
+			annotation: ontComment
 		});
 
 		console.log(ontClass.getTurtle());

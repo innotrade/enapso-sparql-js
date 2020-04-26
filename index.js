@@ -4,6 +4,7 @@
 
 const
 	{ EnapsoSPARQLJS } = require('./lib/enapso-sparql-js'),
+	{ OntEntity } = require('./lib/ontEntity'),
 	{ OntTriple } = require('./lib/ontTriple'),
 	{ OntTripleStore } = require('./lib/ontTripleStore'),
 	{ OntNode } = require('./lib/ontNode'),
@@ -12,20 +13,23 @@ const
 	{ OntClass } = require('./lib/ontClass'),
 	{ OntIndividual } = require('./lib/ontIndividual'),
 	{ OntRestriction } = require('./lib/ontRestriction'),
-	{ OntValueRestriction } = require('./lib/ontValueRestriction')
+	{ OntValueRestriction } = require('./lib/ontValueRestriction'),
+	{ OntAnnotation } = require('./lib/ontAnnotation')
 	;
 
 module.exports = {
 	enspjs: {
-		OntTriple, OntTripleStore,
+		OntEntity, OntTriple, OntTripleStore,
 		OntNode, ontBlankNode, ontNamedNode,
 		OntClass, OntIndividual,
 		OntRestriction, OntValueRestriction,
+		OntAnnotation,
 		EnapsoSPARQLJS
 	},
-	OntTriple, OntTripleStore,
+	OntEntity, OntTriple, OntTripleStore,
 	OntNode, ontBlankNode, ontNamedNode,
 	OntClass, OntIndividual,
 	OntRestriction, OntValueRestriction,
+	OntAnnotation,
 	EnapsoSPARQLJS
 }
