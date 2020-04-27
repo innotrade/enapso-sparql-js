@@ -14,7 +14,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Lang Builder",
-			"program": "${workspaceFolder}/ontbuilder/enLangOnt.js"
+			"program": "${workspaceFolder}/ontbuilder/ontBuilderDemo.js"
 		}
 	]
 }

@@ -4,6 +4,7 @@
 
 const
 	{ EnapsoSPARQLJS } = require('./lib/enapso-sparql-js'),
+	{ EnapsoLanguageOntology } = require('./ontbuilder/enLangOnt'),
 	{ OntEntity } = require('./lib/ontEntity'),
 	{ OntTriple } = require('./lib/ontTriple'),
 	{ OntTripleStore } = require('./lib/ontTripleStore'),
@@ -37,7 +38,7 @@ module.exports = {
 		OntMinRestriction, OntMaxRestriction,
 		OntExactlyRestriction, OntAnnotation,
 		OntComment,
-		EnapsoSPARQLJS
+		EnapsoSPARQLJS, EnapsoLanguageOntology
 	},
 	OntEntity, OntTriple, OntTripleStore,
 	OntNode, OntBlankNode, OntNamedNode,
@@ -48,5 +49,5 @@ module.exports = {
 	OntMinRestriction, OntMaxRestriction,
 	OntExactlyRestriction, OntAnnotation, 
 	OntComment,
-	EnapsoSPARQLJS
+	EnapsoSPARQLJS, EnapsoLanguageOntology
 }

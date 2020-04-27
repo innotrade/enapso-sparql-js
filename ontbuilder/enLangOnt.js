@@ -3,43 +3,111 @@
 // Author: Alexander Schulze
 
 const
-	{ enspjs } = require("../index");
+	{ OntTripleStore } = require('../lib/ontTripleStore'),
+	{ OntOntology } = require('../lib/ontOntology'),
+	{ OntClass } = require('../lib/ontClass'),
+	{ OntDatatypeProperty } = require('../lib/ontDatatypeProperty'),
+	{ OntObjectProperty } = require('../lib/ontObjectProperty'),
+	{ OntValueRestriction } = require('../lib/ontValueRestriction'),
+	{ OntOnlyRestriction } = require('../lib/ontOnlyRestriction'),
+	{ OntSomeRestriction } = require('../lib/ontSomeRestriction'),
+	{ OntMinRestriction } = require('../lib/ontMinRestriction'),
+	{ OntMaxRestriction } = require('../lib/ontMaxRestriction'),
+	{ OntExactlyRestriction } = require('../lib/ontExactlyRestriction'),
+	{ OntComment } = require('../lib/ontComment')
+	;
 
-class EnapsoLanguageOnotology {
+class EnapsoLanguageOntology {
 
-	constructor() {
-		this.iri = 'http://ont.enapso.com/ecmascript';
-		this.versionIri = 'http://ont.enapso.com/ecmascript/1.0.0';
-		this.context = 'http://ont.enapso.com/ecmascript';
-		this.prefix = 'enecma:';
+	constructor(args) {
+		let ontologyId = args.ontologyId;
+		let prefix = args.prefix;
+		this.ontologyComments = args.comments;
+		this.iri = 'http://ont.enapso.com/' + ontologyId;
+		this.versionIri = 'http://ont.enapso.com/' + ontologyId + '/1.0.0';
+		this.context = 'http://ont.enapso.com/' + ontologyId;
+		this.prefix = prefix + ':';
+	}
+
+	addModule(args) {
+		let moduleName = args.moduleName;
+
+		// module
+		this.parentModuleName = moduleName;
+		this.moduleParent = new OntClass({
+			"className": this.prefix + moduleName + '.Module',
+			"superClassName": this.prefix + 'Module'
+		});
+		// give the module a name
+		let moduleNameRestriction = new OntValueRestriction({
+			property: this.prefix + 'name',
+			value: '"' + this.parentModuleName + '"'
+		});
+		this.moduleParent.addRestriction({ restriction: moduleNameRestriction });
+
+		this.tripleStore.addTriples({ triples: this.moduleParent.getTriples() });
 	}
 
 	addClass(args) {
 		let className = args.className;
 
+		// class
 		this.parentClassName = className;
-		this.classParent = new enspjs.OntClass({
+		this.classParent = new OntClass({
 			"className": this.prefix + className + '.Class',
 			"superClassName": this.prefix + 'Class'
 		});
-		this.constructorParent = new enspjs.OntClass({
+		// give the class a name
+		let classNameRestriction = new OntValueRestriction({
+			property: this.prefix + 'name',
+			value: '"' + this.parentClassName + '"'
+		});
+		this.classParent.addRestriction({ restriction: classNameRestriction });
+
+		// constructor parent
+		this.constructorParent = new OntClass({
 			"className": this.prefix + className + '.Constructor',
 			"superClassName": this.prefix + 'Constructor'
 		});
-		this.methodParent = new enspjs.OntClass({
+		// add the methods restriction to the class
+		let hasConstructorsRestriction = new OntOnlyRestriction({
+			"property": this.prefix + "hasConstructors",
+			"class": this.constructorParent.getClassName(),
+		});
+		this.classParent.addRestriction({ restriction: hasConstructorsRestriction });
+
+		// method parent
+		this.methodParent = new OntClass({
 			"className": this.prefix + className + '.Method',
 			"superClassName": this.prefix + 'Method'
 		});
-		this.propertyParent = new enspjs.OntClass({
+		// add the methods restriction to the class
+		let hasMethodsRestriction = new OntOnlyRestriction({
+			"property": this.prefix + "hasMethods",
+			"class": this.methodParent.getClassName(),
+		});
+		this.classParent.addRestriction({ restriction: hasMethodsRestriction });
+
+		// property parent
+		this.propertyParent = new OntClass({
 			"className": this.prefix + className + '.Property',
 			"superClassName": this.prefix + 'Property'
 		});
-		this.instanceParent = new enspjs.OntClass({
+		// add the properties restriction to the class
+		let hasPropertiesRestriction = new OntOnlyRestriction({
+			"property": this.prefix + "hasProperties",
+			"class": this.propertyParent.getClassName(),
+		});
+		this.classParent.addRestriction({ restriction: hasPropertiesRestriction });
+
+		this.instanceParent = new OntClass({
 			"className": this.prefix + className + '.Instance',
 			"superClassName": this.prefix + 'Instance'
 		});
-		this.argumentParent = new enspjs.OntClass({
-			"className": this.prefix + className + '.Argument',
+
+		this.parentArgumentName = className + '.Argument';
+		this.argumentParent = new OntClass({
+			"className": this.prefix + this.parentArgumentName,
 			"superClassName": this.prefix + 'Argument'
 		});
 
@@ -52,11 +120,28 @@ class EnapsoLanguageOnotology {
 	}
 
 	addFunction(args) {
-		let methodName = args.methodName;
-		this.method = new enspjs.OntClass({
-			"className": this.prefix + this.parentClassName + '.' + methodName,
+		this.methodName = args.methodName;
+		// add new parent class for the method's or constructor's variants
+		this.method = new OntClass({
+			"className": this.prefix + this.parentClassName + '.' + this.methodName,
 			"superClassName": this.prefix + this.parentClassName + '.' + args.type
 		});
+		// add the name to the method parent
+		let funcNameRestriction = new OntValueRestriction({
+			property: this.prefix + 'name',
+			value: '"' + this.methodName + '"'
+		});
+		this.method.addRestriction({ restriction: funcNameRestriction });
+		// add a comment if given
+		if (args.comment) {
+			this.method.addAnnotation({
+				annotation: new OntComment({
+					entity: this.method.getClassName(),
+					comment: args.comment
+				})
+			});
+		}
+
 		this.tripleStore.addTriples({ triples: this.method.getTriples() });
 	}
 
@@ -71,88 +156,134 @@ class EnapsoLanguageOnotology {
 		this.addFunction(args);
 	}
 
+	addVariant(args) {
+		this.variantName = args.variantName;
+		this.methodVariant = new OntClass({
+			"className": this.prefix + this.parentClassName + '.' + this.methodName + '.' + this.variantName,
+			"superClassName": this.prefix + this.parentClassName + '.' + this.methodName
+		});
+		this.tripleStore.addTriples({ triples: this.methodVariant.getTriples() });
+	}
+
+	addArgument(args) {
+		this.argumentName = args.name;
+		this.argumentType = args.type;
+		this.argument = new OntClass({
+			"className": this.prefix + this.parentClassName + '.' + this.methodName + '.' + this.variantName + '.' + this.argumentName,
+			"superClassName": this.prefix + this.parentArgumentName
+		});
+		// name of the argument
+		let argNameRestriction = new OntValueRestriction({
+			"property": this.prefix + 'name',
+			"value": '"' + this.argumentName + '"'
+		});
+		this.argument.addRestriction({ restriction: argNameRestriction });
+		// type of the argument
+		let typeRestriction = new OntOnlyRestriction({
+			"property": this.prefix + 'hasDatatype',
+			"class": this.argumentType
+		});
+		this.argument.addRestriction({ restriction: typeRestriction });
+		// optional order of the argument
+		if (args.order) {
+			let orderRestriction = new OntValueRestriction({
+				"property": this.prefix + 'order',
+				"value": '"' + args.order + '"^^xsd:NonNegativeInteger'
+			});
+			this.argument.addRestriction({ restriction: orderRestriction });
+		}
+		// optional comment of the argument
+		if (args.comment) {
+			this.argument.addAnnotation({
+				annotation: new OntComment({
+					entity: this.argument.getClassName(),
+					comment: args.comment
+				})
+			});
+		}
+		this.tripleStore.addTriples({ triples: this.argument.getTriples() });
+	}
+
 	createOntologySkeleton() {
-		this.tripleStore = new enspjs.OntTripleStore({
+		this.tripleStore = new OntTripleStore({
 			context: this.context
 		});
 
 		// ### Ontology ###
 
-		this.ontology = new enspjs.OntOntology({
+		this.ontology = new OntOntology({
 			"iri": '<' + this.iri + '>',
 			"versionIri": '<' + this.versionIri + '>'
 		});
-		this.ontology.addAnnotation({
-			annotation: new enspjs.OntComment({
-				entity: this.ontology.getIri(),
-				comment: '"Enapso Language Ontology"@en'
-			})
-		});
-		this.ontology.addAnnotation({
-			annotation: new enspjs.OntComment({
-				entity: this.ontology.getIri(),
-				comment: '"(C) Copyright Innotrade Herzogenrath, NRW, Germany"@en'
-			})
-		});
+		if (this.ontologyComments) {
+			for (let comment of this.ontologyComments) {
+				this.ontology.addAnnotation({
+					annotation: new OntComment({
+						entity: this.ontology.getIri(),
+						comment
+					})
+				});
+			}
+		}
 
 		// ### Data Properties ###
 
-		this.dpName = new enspjs.OntDatatypeProperty({
+		this.dpName = new OntDatatypeProperty({
 			"iri": this.prefix + 'name'
 		});
 
 		// ### Object Properties ###
 
-		this.opHasConstructors = new enspjs.OntObjectProperty({
+		this.opHasConstructors = new OntObjectProperty({
 			"iri": this.prefix + 'hasConstructors'
 		});
-		this.opHasMethods = new enspjs.OntObjectProperty({
+		this.opHasMethods = new OntObjectProperty({
 			"iri": this.prefix + 'hasMethods'
 		});
-		this.opHasProperties = new enspjs.OntObjectProperty({
+		this.opHasProperties = new OntObjectProperty({
 			"iri": this.prefix + 'hasProperties'
 		});
-		this.opHasDatatype = new enspjs.OntObjectProperty({
+		this.opHasDatatype = new OntObjectProperty({
 			"iri": this.prefix + 'hasDatatype'
 		});
-		this.opHasArgument = new enspjs.OntObjectProperty({
+		this.opHasArgument = new OntObjectProperty({
 			"iri": this.prefix + 'hasArgument'
 		});
 
 		// ### Classes ###
 
 		// Class Root Class
-		this.classRoot = new enspjs.OntClass({
+		this.classRoot = new OntClass({
 			"className": this.prefix + 'Class'
 			// "superClassName": 'owl:Class'
 		});
 		// Method Root Class
-		this.methodRoot = new enspjs.OntClass({
+		this.methodRoot = new OntClass({
 			"className": this.prefix + 'Method'
 			// "superClassName": 'owl:Class'
 		});
 		// Constructor Root Class
-		this.constructorRoot = new enspjs.OntClass({
+		this.constructorRoot = new OntClass({
 			"className": this.prefix + 'Constructor'
 			// "superClassName": 'owl:Class'
 		});
 		// Properties Root Class
-		this.propertyRoot = new enspjs.OntClass({
+		this.propertyRoot = new OntClass({
 			"className": this.prefix + 'Property'
 			// "superClassName": 'owl:Class'
 		});
 		// Arguments Root Class
-		this.argumentRoot = new enspjs.OntClass({
+		this.argumentRoot = new OntClass({
 			"className": this.prefix + 'Argument'
 			// "superClassName": 'owl:Class'
 		});
 		// Instance Root Class
-		this.instanceRoot = new enspjs.OntClass({
+		this.instanceRoot = new OntClass({
 			"className": this.prefix + 'Instance'
 			// "superClassName": 'owl:Class'
 		});
 		// Literal Root Class
-		this.literalRoot = new enspjs.OntClass({
+		this.literalRoot = new OntClass({
 			"className": this.prefix + 'Literal'
 			// "superClassName": 'owl:Class'
 		});
@@ -175,24 +306,10 @@ class EnapsoLanguageOnotology {
 		this.tripleStore.addTriples({ triples: this.argumentRoot.getTriples() });
 		this.tripleStore.addTriples({ triples: this.instanceRoot.getTriples() });
 		this.tripleStore.addTriples({ triples: this.literalRoot.getTriples() });
-
-		/*
-		this.addClass("Ext.Base");
-		this.addClass("Ext.Object");
-		this.addClass("Ext.View");
-		*/
-
-		let cls = this.addClass({ "className": "Test" });
-		this.addConstructor({});
-		this.addMethod({ "methodName": "addItem" });
-		this.addMethod({ "methodName": "deleteItem" });
-		this.addMethod({ "methodName": "updateItem" });
-		this.addMethod({ "methodName": "getItem" });
-
-		console.log(this.tripleStore.getTurtle());
 	}
 
 }
 
-let enlo = new EnapsoLanguageOnotology();
-enlo.createOntologySkeleton();
+module.exports = {
+	EnapsoLanguageOntology
+}
