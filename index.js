@@ -8,8 +8,9 @@ const
 	{ OntTriple } = require('./lib/ontTriple'),
 	{ OntTripleStore } = require('./lib/ontTripleStore'),
 	{ OntNode } = require('./lib/ontNode'),
-	{ ontBlankNode } = require('./lib/ontBlankNode'),
-	{ ontNamedNode } = require('./lib/ontNamedNode'),
+	{ OntBlankNode } = require('./lib/ontBlankNode'),
+	{ OntNamedNode } = require('./lib/ontNamedNode'),
+	{ OntOntology } = require('./lib/ontOntology'),
 	{ OntClass } = require('./lib/ontClass'),
 	{ OntDatatypeProperty } = require('./lib/ontDatatypeProperty'),
 	{ OntObjectProperty } = require('./lib/ontObjectProperty'),
@@ -21,28 +22,31 @@ const
 	{ OntMinRestriction } = require('./lib/ontMinRestriction'),
 	{ OntMaxRestriction } = require('./lib/ontMaxRestriction'),
 	{ OntExactlyRestriction } = require('./lib/ontExactlyRestriction'),
-	{ OntAnnotation } = require('./lib/ontAnnotation')
+	{ OntAnnotation } = require('./lib/ontAnnotation'),
+	{ OntComment } = require('./lib/ontComment')
 	;
 
 module.exports = {
 	enspjs: {
 		OntEntity, OntTriple, OntTripleStore,
-		OntNode, ontBlankNode, ontNamedNode,
+		OntNode, OntBlankNode, OntNamedNode,
 		OntDatatypeProperty, OntObjectProperty,
-		OntClass, OntIndividual,
+		OntOntology, OntClass, OntIndividual,
 		OntRestriction, OntValueRestriction,
 		OntOnlyRestriction, OntSomeRestriction,
 		OntMinRestriction, OntMaxRestriction,
 		OntExactlyRestriction, OntAnnotation,
+		OntComment,
 		EnapsoSPARQLJS
 	},
 	OntEntity, OntTriple, OntTripleStore,
-	OntNode, ontBlankNode, ontNamedNode,
+	OntNode, OntBlankNode, OntNamedNode,
 	OntDatatypeProperty, OntObjectProperty,
-	OntClass, OntIndividual,
+	OntOntology, OntClass, OntIndividual,
 	OntRestriction, OntValueRestriction,
 	OntOnlyRestriction, OntSomeRestriction,
 	OntMinRestriction, OntMaxRestriction,
-	OntExactlyRestriction, OntAnnotation,
+	OntExactlyRestriction, OntAnnotation, 
+	OntComment,
 	EnapsoSPARQLJS
 }
