@@ -3,6 +3,7 @@
 // Author: Alexander Schulze
 
 const
+	{ OntTriple } = require('../lib/ontTriple'),
 	{ OntTripleStore } = require('../lib/ontTripleStore'),
 	{ OntOntology } = require('../lib/ontOntology'),
 	{ OntClass } = require('../lib/ontClass'),
@@ -208,6 +209,18 @@ class EnapsoLanguageOntology {
 		this.tripleStore = new OntTripleStore({
 			context: this.context
 		});
+
+		// ### Prefixes ###
+
+		this.tripleStore.addTriple({triple: new OntTriple({
+			"subject": "@prefix", "predicate": ":", "object": "<http://ont.enapso.com/nodejs#>"
+		})});
+		this.tripleStore.addTriple({triple: new OntTriple({
+			"subject": "@prefix", "predicate": "ennjs:", "object": "<http://ont.enapso.com/nodejs#>"
+		})});
+		this.tripleStore.addTriple({triple: new OntTriple({
+			"subject": "@base", "predicate": "", "object": "<http://ont.enapso.com/nodejs#>"
+		})});
 
 		// ### Ontology ###
 
