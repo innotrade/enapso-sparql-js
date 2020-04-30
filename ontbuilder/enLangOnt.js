@@ -84,11 +84,19 @@ class EnapsoLanguageOntology {
 		});
 		this.moduleParent.addRestriction({ restriction: hasMethodsRestriction });
 
-		this.parentArgumentName = moduleName + EnapsoLanguageOntology.SFX_ARGUMENT,
-			this.argumentParent = new OntClass({
-				"className": this.prefix + this.parentArgumentName,
-				"superClassName": this.prefix + 'Argument'
-			});
+		// add a argument parent for this module
+		this.parentArgumentName = moduleName + EnapsoLanguageOntology.SFX_ARGUMENT;
+		this.argumentParent = new OntClass({
+			"className": this.prefix + this.parentArgumentName,
+			"superClassName": this.prefix + 'Argument'
+		});
+
+		// add a result parent for this module
+		this.parentResultName = moduleName + EnapsoLanguageOntology.SFX_RESULT;
+		this.resultParent = new OntClass({
+			"className": this.prefix + this.parentResultName,
+			"superClassName": this.prefix + 'Result'
+		});
 
 		// add a comment if given
 		if (args.comment) {
@@ -103,6 +111,7 @@ class EnapsoLanguageOntology {
 		this.tripleStore.addTriples({ triples: this.moduleParent.getTriples() });
 		this.tripleStore.addTriples({ triples: this.methodParent.getTriples() });
 		this.tripleStore.addTriples({ triples: this.argumentParent.getTriples() });
+		this.tripleStore.addTriples({ triples: this.resultParent.getTriples() });
 	}
 
 	// adds a class to the ontology
@@ -198,12 +207,14 @@ class EnapsoLanguageOntology {
 
 	addFunction(args) {
 		this.methodName = args.methodName;
+
 		// add new parent class for the method's or constructor's variants
 		let parentName = this['parent' + args.parentType + 'Name'];
 		this.method = new OntClass({
 			"className": this.prefix + parentName + '.' + this.methodName,
 			"superClassName": this.prefix + parentName + args.type
 		});
+
 		// add the name to the method parent
 		let funcNameRestriction = new OntValueRestriction({
 			property: this.prefix + 'name',
@@ -221,7 +232,16 @@ class EnapsoLanguageOntology {
 			});
 		}
 
+		// build argumemt class tree
+		let part1 = this.parentArgumentName.substr(0, this.parentArgumentName.length - EnapsoLanguageOntology.SFX_ARGUMENT.length);
+		let part2 = this.parentArgumentName.substr(this.parentArgumentName.length - EnapsoLanguageOntology.SFX_ARGUMENT.length);
+		this.argumentMethodParent = new OntClass({
+			"className": this.prefix + part1 + '.' + this.methodName + part2,
+			"superClassName": this.prefix + this.parentArgumentName,
+		});
+
 		this.tripleStore.addTriples({ triples: this.method.getTriples() });
+		this.tripleStore.addTriples({ triples: this.argumentMethodParent.getTriples() });
 	}
 
 	// adds a method directly for the module
@@ -254,7 +274,27 @@ class EnapsoLanguageOntology {
 			"className": this.prefix + parentName + '.' + this.methodName + '.' + this.variantName,
 			"superClassName": this.prefix + parentName + '.' + this.methodName
 		});
+
+		// build argument class tree
+		let part1 = this.parentArgumentName.substr(0, this.parentArgumentName.length - EnapsoLanguageOntology.SFX_ARGUMENT.length);
+		let part2 = this.parentArgumentName.substr(this.parentArgumentName.length - EnapsoLanguageOntology.SFX_ARGUMENT.length);
+		this.argumentMethodVariantParent = new OntClass({
+			"className": this.prefix + part1 + '.' + this.methodName + '.' + this.variantName + part2,
+			"superClassName": this.prefix + part1 + '.' + this.methodName + part2
+		});
+
+		// add a comment if given
+		if (args.comment) {
+			this.methodVariant.addAnnotation({
+				annotation: new OntComment({
+					entity: this.methodVariant.getClassName(),
+					comment: args.comment
+				})
+			});
+		}
+
 		this.tripleStore.addTriples({ triples: this.methodVariant.getTriples() });
+		this.tripleStore.addTriples({ triples: this.argumentMethodVariantParent.getTriples() });
 	}
 
 	addArgument(args) {
@@ -264,20 +304,23 @@ class EnapsoLanguageOntology {
 
 		this.argument = new OntClass({
 			"className": this.prefix + parentName + '.' + this.methodName + '.' + this.variantName + '.' + this.argumentName,
-			"superClassName": this.prefix + this.parentArgumentName
+			"superClassName": this.argumentMethodVariantParent.getClassName() // this.prefix + this.parentArgumentName
 		});
+
 		// name of the argument
 		let argNameRestriction = new OntValueRestriction({
 			"property": this.prefix + 'name',
 			"value": '"' + this.argumentName + '"'
 		});
 		this.argument.addRestriction({ restriction: argNameRestriction });
+
 		// type of the argument
 		let typeRestriction = new OntOnlyRestriction({
 			"property": this.prefix + 'hasDatatype',
 			"class": this.argumentType
 		});
 		this.argument.addRestriction({ restriction: typeRestriction });
+
 		// optional order of the argument
 		if (args.order) {
 			let orderRestriction = new OntValueRestriction({
@@ -286,6 +329,7 @@ class EnapsoLanguageOntology {
 			});
 			this.argument.addRestriction({ restriction: orderRestriction });
 		}
+
 		// optional comment of the argument
 		if (args.comment) {
 			this.argument.addAnnotation({
@@ -295,6 +339,7 @@ class EnapsoLanguageOntology {
 				})
 			});
 		}
+
 		this.tripleStore.addTriples({ triples: this.argument.getTriples() });
 	}
 
@@ -302,8 +347,9 @@ class EnapsoLanguageOntology {
 		this.resultType = args.type;
 		let parentName = this['parent' + args.parentType + 'Name'];
 
+		// create the class for the result
 		this.result = new OntClass({
-			"className": this.prefix + parentName + '.' + this.methodName + '.' + this.variantName,
+			"className": this.prefix + parentName + '.' + this.methodName + EnapsoLanguageOntology.SFX_RESULT,
 			"superClassName": this.prefix + this.parentResultName
 		});
 
@@ -324,41 +370,62 @@ class EnapsoLanguageOntology {
 			});
 		}
 
+		// add the (default) result to the method parent (may differ from the variants results)
+		let resultRestriction = new OntExactlyRestriction({
+			property: this.prefix + 'hasResult',
+			value: this.prefix + parentName + '.' + this.methodName + EnapsoLanguageOntology.SFX_RESULT
+		});
+		this.tripleStore.addTriples({
+			triples: this.methodVariant.addRestriction({
+				restriction: resultRestriction
+			})
+		});
+
 		this.tripleStore.addTriples({ triples: this.result.getTriples() });
 	}
 
 	createEcmaScriptBasics() {
 
 		// Instances
-		this.stringInstance = new OntClass({
-			"className": this.prefix + 'String' + EnapsoLanguageOntology.SFX_INSTANCE,
+		this.unknownInstance = new OntClass({
+			"className": this.prefix + 'Unknown' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 		this.numberInstance = new OntClass({
 			"className": this.prefix + 'Number' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
+		this.stringInstance = new OntClass({
+			"className": this.prefix + 'String' + EnapsoLanguageOntology.SFX_INSTANCE,
+			"superClassName": this.prefix + "Instance"
+		});
+		this.anyInstance = new OntClass({
+			"className": this.prefix + 'Any' + EnapsoLanguageOntology.SFX_INSTANCE,
+			"superClassName": this.prefix + "Instance"
+		});
 		this.booleanInstance = new OntClass({
 			"className": this.prefix + 'Boolean' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 		this.dateInstance = new OntClass({
 			"className": this.prefix + 'Date' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 		this.objectInstance = new OntClass({
 			"className": this.prefix + 'Object' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 		this.arrayInstance = new OntClass({
 			"className": this.prefix + 'Array' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 		this.regExpInstance = new OntClass({
 			"className": this.prefix + 'RegExp' + EnapsoLanguageOntology.SFX_INSTANCE,
 			"superClassName": this.prefix + "Instance"
-		});		
+		});
 
+		this.tripleStore.addTriples({ triples: this.anyInstance.getTriples() });
+		this.tripleStore.addTriples({ triples: this.unknownInstance.getTriples() });
 		this.tripleStore.addTriples({ triples: this.stringInstance.getTriples() });
 		this.tripleStore.addTriples({ triples: this.numberInstance.getTriples() });
 		this.tripleStore.addTriples({ triples: this.booleanInstance.getTriples() });
@@ -368,35 +435,40 @@ class EnapsoLanguageOntology {
 		this.tripleStore.addTriples({ triples: this.regExpInstance.getTriples() });
 
 		// Literals
+		this.anyLiteral = new OntClass({
+			"className": this.prefix + 'Any' + EnapsoLanguageOntology.SFX_LITERAL,
+			"superClassName": this.prefix + "Literal"
+		});
 		this.stringLiteral = new OntClass({
 			"className": this.prefix + 'String' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.numberLiteral = new OntClass({
 			"className": this.prefix + 'Number' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.booleanLiteral = new OntClass({
 			"className": this.prefix + 'Boolean' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.dateLiteral = new OntClass({
 			"className": this.prefix + 'Date' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.objectLiteral = new OntClass({
 			"className": this.prefix + 'Object' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.arrayLiteral = new OntClass({
 			"className": this.prefix + 'Array' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 		this.regExpLiteral = new OntClass({
 			"className": this.prefix + 'RegExp' + EnapsoLanguageOntology.SFX_LITERAL,
 			"superClassName": this.prefix + "Literal"
-		});		
+		});
 
+		this.tripleStore.addTriples({ triples: this.anyLiteral.getTriples() });
 		this.tripleStore.addTriples({ triples: this.stringLiteral.getTriples() });
 		this.tripleStore.addTriples({ triples: this.numberLiteral.getTriples() });
 		this.tripleStore.addTriples({ triples: this.booleanLiteral.getTriples() });
@@ -421,6 +493,11 @@ class EnapsoLanguageOntology {
 		this.tripleStore.addTriple({
 			triple: new OntTriple({
 				"subject": "@prefix", "predicate": "ennjs:", "object": "<http://ont.enapso.com/nodejs#>"
+			})
+		});
+		this.tripleStore.addTriple({
+			triple: new OntTriple({
+				"subject": "@prefix", "predicate": "enecma:", "object": "<http://ont.enapso.com/ecmascript#>"
 			})
 		});
 		this.tripleStore.addTriple({
@@ -469,6 +546,9 @@ class EnapsoLanguageOntology {
 		this.opHasArgument = new OntObjectProperty({
 			"iri": this.prefix + 'hasArgument'
 		});
+		this.opHasResult = new OntObjectProperty({
+			"iri": this.prefix + 'hasResult'
+		});
 
 
 		// ### Classes ###
@@ -478,75 +558,71 @@ class EnapsoLanguageOntology {
 			"className": this.prefix + 'Reserved'
 		});
 		this.tripleStore.addTriples({ triples: this.reservedRoot.getTriples() });
+
+		// null
 		this.tripleStore.addTriples({
 			triples: new OntClass({
 				"className": this.prefix + 'Null',
 				"superClassName": this.reservedRoot.getClassName()
 			}).getTriples()
 		});
-		this.tripleStore.addTriples({
-			triples: new OntClass({
-				"className": this.prefix + 'Void',
-				"superClassName": this.reservedRoot.getClassName()
-			}).getTriples()
-		});
-		this.tripleStore.addTriples({
-			triples: new OntClass({
-				"className": this.prefix + 'NaN',
-				"superClassName": this.reservedRoot.getClassName()
-			}).getTriples()
-		});
 
+		// void / undefined
+		this.void = new OntClass({
+			"className": this.prefix + 'Void',
+			"superClassName": this.reservedRoot.getClassName()
+		});
+		this.tripleStore.addTriples({ triples: this.void.getTriples() });
+
+		// undefined
+		this.undefined = new OntClass({
+			"className": this.prefix + 'Undefined',
+			"superClassName": this.reservedRoot.getClassName()
+		});
+		this.tripleStore.addTriples({ triples: this.void.getTriples() });
+
+		// NaN
+		this.NaN = new OntClass({
+			"className": this.prefix + 'NaN',
+			"superClassName": this.reservedRoot.getClassName()
+		});
+		this.tripleStore.addTriples({ triples: this.NaN.getTriples() });
 
 		// Module Root Class
-		this.moduleRoot = new OntClass({
-			"className": this.prefix + 'Module'
-		});
+		this.moduleRoot = new OntClass({ "className": this.prefix + 'Module' });
 		// Class Root Class
-		this.classRoot = new OntClass({
-			"className": this.prefix + 'Class'
-		});
+		this.classRoot = new OntClass({ "className": this.prefix + 'Class' });
 		// Method Root Class
-		this.methodRoot = new OntClass({
-			"className": this.prefix + 'Method'
-		});
+		this.methodRoot = new OntClass({ "className": this.prefix + 'Method' });
 		// Constructor Root Class
-		this.constructorRoot = new OntClass({
-			"className": this.prefix + 'Constructor'
-		});
+		this.constructorRoot = new OntClass({ "className": this.prefix + 'Constructor' });
 		// Properties Root Class
-		this.propertyRoot = new OntClass({
-			"className": this.prefix + 'Property'
-		});
+		this.propertyRoot = new OntClass({ "className": this.prefix + 'Property' });
 		// Arguments Root Class
-		this.argumentRoot = new OntClass({
-			"className": this.prefix + 'Argument'
-		});
+		this.argumentRoot = new OntClass({ "className": this.prefix + 'Argument' });
 		// Result Root Class
-		this.resultRoot = new OntClass({
-			"className": this.prefix + 'Result'
-		});
+		this.resultRoot = new OntClass({ "className": this.prefix + 'Result' });
 		// Instance Root Class
-		this.instanceRoot = new OntClass({
-			"className": this.prefix + 'Instance'
-		});
+		this.instanceRoot = new OntClass({ "className": this.prefix + 'Instance' });
 		// Literal Root Class
-		this.literalRoot = new OntClass({
-			"className": this.prefix + 'Literal'
-		});
+		this.literalRoot = new OntClass({ "className": this.prefix + 'Literal' });
 
 		this.createEcmaScriptBasics();
 
 		// ontology header
 		this.tripleStore.addTriples({ triples: this.ontology.getTriples() });
+
 		// data properties
 		this.tripleStore.addTriples({ triples: this.dpName.getTriples() });
+
 		// object properties
 		this.tripleStore.addTriples({ triples: this.opHasConstructors.getTriples() });
 		this.tripleStore.addTriples({ triples: this.opHasMethods.getTriples() });
 		this.tripleStore.addTriples({ triples: this.opHasProperties.getTriples() });
 		this.tripleStore.addTriples({ triples: this.opHasDatatype.getTriples() });
 		this.tripleStore.addTriples({ triples: this.opHasArgument.getTriples() });
+		this.tripleStore.addTriples({ triples: this.opHasResult.getTriples() });
+
 		// root classes
 		this.tripleStore.addTriples({ triples: this.moduleRoot.getTriples() });
 		this.tripleStore.addTriples({ triples: this.classRoot.getTriples() });
