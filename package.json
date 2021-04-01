@@ -1,45 +1,46 @@
 {
-    "name": "@innotrade/enapso-sparql-js",
-    "version": "1.0.2",
-    "description": "Enapso SPARQL Abstraction for Node.js",
-    "main": "index.js",
-    "scripts": {
-        "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/test.js --exit"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/innotrade/enapso-graphdb-admin.git"
-    },
-    "keywords": [
-        "enapso",
-        "innotrade",
-        "graphdb",
-        "graphdatabase",
-        "ontotext",
-        "admin",
-        "administration",
-        "ontology",
-        "knowledgegraph",
-        "sparql",
-        "rdf",
-        "owl"
-    ],
-    "author": "Innotrade GmbH, Alexander Schulze",
-    "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/innotrade/enapso-sparql-js/issues"
-    },
-    "homepage": "https://github.com/innotrade/enapso-sparql-js#readme",
-    "dependencies": {
-        "@innotrade/enapso-graphdb-admin": "^1.1.7",
-        "@innotrade/enapso-graphdb-client": "^1.7.1",
-        "@innotrade/enapso-jsast": "^1.0.3",
-        "@innotrade/enapso-orm": "^1.1.13",
-        "@innotrade/enapso-sparql-tools": "^1.0.10",
-        "request-promise": "^4.2.5"
-    },
-    "devDependencies": {
-        "chai": "^4.2.0",
-        "mocha": "^7.1.1"
-    }
+  "name": "@innotrade/enapso-sparql-js",
+  "version": "1.1.0",
+  "description": "ENAPSO SPARQL Abstraction for Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/test.js --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innotrade/enapso-graphdb-admin.git"
+  },
+  "keywords": [
+    "enapso",
+    "innotrade",
+    "graphdb",
+    "graphdatabase",
+    "ontotext",
+    "admin",
+    "administration",
+    "ontology",
+    "knowledgegraph",
+    "sparql",
+    "rdf",
+    "owl"
+  ],
+  "author": "Innotrade GmbH, Alexander Schulze",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/innotrade/enapso-sparql-js/issues"
+  },
+  "homepage": "https://github.com/innotrade/enapso-sparql-js#readme",
+  "dependencies": {
+    "@innotrade/enapso-graphdb-admin": "^1.3.5",
+    "@innotrade/enapso-graphdb-client": "^1.8.2",
+    "@innotrade/enapso-jsast": "^1.1.9",
+    "@innotrade/enapso-orm": "^1.3.4",
+    "@innotrade/enapso-sparql-tools": "^1.3.4",
+    "request-promise": "^4.2.5",
+    "sparqljs": "^3.4.1"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2"
+  }
 }
